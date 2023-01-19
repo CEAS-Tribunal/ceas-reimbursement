@@ -273,6 +273,11 @@ try {
 
     $email_msg = "Hello " . $name . ", \n \n";
     $email_msg .= "This email is to confirm that we have recieved your reimbursement request. ";
+    $email_msg .= "Please verify the transaction information below:\n"
+    $email_msg .= "Date: " . date("m/d/Y", strtotime($date)) . " \n";
+    $email_msg .= "Vendor: " . $vendor . " \n";
+    $email_msg .= "Amount: " . $amount . " \n";
+    $email_msg .= "Description: " . $description . " \n \n";
     $email_msg .= "Your transaction will be evaluated and if we require any further information, we will contact you. \n \n";
     $email_msg .= "If you have any questions, feel free to reply back to this email. \n \n";
     $email_msg .= "Best regards, \n";

@@ -130,7 +130,7 @@ if (!preg_match("/^[0-9]{0,10}.[0-9]{0,10}$/", $amount)) {
 }
 
 // Check description
-if (!preg_match("/^[\w\ \'\.]{1,500}$/", $description)) {
+if (!preg_match("/^[\w\ \'\.\-\_\@\+]{1,500}$/", $description)) {
     $result_data->message = 'Your description is invalid. Please only use latin characters a-z with an optional '
         . 'apostrophe or period. Your description is also limited to 500 characters.';
     echo json_encode($result_data);

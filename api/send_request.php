@@ -20,6 +20,7 @@ $name  = '';
 $position  = '';
 $email = '';
 $m_id  = '';
+$uniqueID = uniqid(); 
 
 // Initialize expenditure variables
 $date = '';
@@ -185,10 +186,10 @@ $admin_email = '';
 $super_email = '';
 
 // Get file names
-$receiptText = "reciept-" . $receipt['name'];
+$receiptText = $uniqueID . "-receipt-" . $receipt['name'];
 $docsText = '';
 if ($docs) {
-    $docsText = "supporting-docs-" . $docs['name'];
+    $docsText = $uniqueID . "-supporting-docs-" . $docs['name'];
 }
 
 $sql = 'SELECT `admin_name`, `admin_email`, `super_email` FROM `reimbursement_admin`';
@@ -225,7 +226,7 @@ if (!$result) {
 }
 
 // Fill PDF
-$output_pdf_path = '../documents/reimbursement-' . uniqid() . '.pdf';
+$output_pdf_path = '../documents/reimbursement-' . $uniqueID . '.pdf';
 
 try {
     $fields = array(
@@ -273,7 +274,7 @@ try {
 
     $email_msg = "Hello " . $name . ", \n \n";
     $email_msg .= "This email is to confirm that we have recieved your reimbursement request. ";
-    $email_msg .= "Please verify the transaction information below:\n"
+    $email_msg .= "Please verify the transaction information below:\n";
     $email_msg .= "Date: " . date("m/d/Y", strtotime($date)) . " \n";
     $email_msg .= "Vendor: " . $vendor . " \n";
     $email_msg .= "Amount: " . $amount . " \n";
@@ -301,6 +302,7 @@ try {
 
     $email_msg  = "Hello " . $admin_name . ", \n \n";
     $email_msg .= "A reimbursement request has been created with the following information: \n \n";
+    $email_msg .= "Request ID: " . $uniqueID ."\n";
     $email_msg .= "Name: " . $name . " \n";
     $email_msg .= "Position: " . $position . " \n";
     $email_msg .= "Email: " . $email . " \n";
@@ -336,7 +338,7 @@ try {
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $output_pdf_path);
-    $mail_admin->AddAttachment($output_pdf_path, 'reimbursement.pdf', 'base64', $mime);
+    $mail_admin->AddAttachment($output_pdf_path, $uniqueID . '-reimbursement.pdf', 'base64', $mime);
 
     $mail_admin->send();
 } catch (Exception $e) {

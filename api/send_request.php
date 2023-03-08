@@ -4,7 +4,6 @@ ini_set('display_errors', '1');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\SMTP;
 
 set_include_path('./includes/');
 require_once('mysqli.php');
@@ -12,7 +11,6 @@ require_once('check_file.php');
 require_once('PHPMailer/Exception.php');
 require_once('PHPMailer/PHPMailer.php');
 require_once('fpdm/fpdm.php');
-require_once('PHPMailer/SMTP.php');
 
 DEFINE('RECEIPT_MAX_FILE_SIZE', 6);
 DEFINE('ATTENDANCE_MAX_FILE_SIZE', 6);
@@ -272,14 +270,6 @@ try {
 $mail = new PHPMailer(true);
 
 try {
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-    $mail->isSMTP();                                            //Send using SMTP
-    $mail->Host       = 'smtp.sendgrid.net';                     //Set the SMTP server to send through
-    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = 'apikey';                     //SMTP username
-    $mail->Password   = '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';                               //SMTP password
-    $mail->Port       = 587;   
-
     $mail->Subject = "Reimbursement Request Recieved";
 
     $email_msg = "Hello " . $name . ", \n \n";
@@ -308,14 +298,6 @@ try {
 $mail_admin = new PHPMailer(true);
 
 try {
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-    $mail->isSMTP();                                            //Send using SMTP
-    $mail->Host       = 'smtp.sendgrid.net';                     //Set the SMTP server to send through
-    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = 'apikey';                     //SMTP username
-    $mail->Password   = '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';                               //SMTP password
-    $mail->Port       = 587;   
-
     $mail_admin->Subject = "Reimbursement Request Recieved";
 
     $email_msg  = "Hello " . $admin_name . ", \n \n";

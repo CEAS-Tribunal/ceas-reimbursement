@@ -5,12 +5,14 @@ ini_set('display_errors', '1');
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 set_include_path('./includes/');
 require_once('mysqli.php');
 require_once('check_file.php');
 require_once('PHPMailer/Exception.php');
 require_once('PHPMailer/PHPMailer.php');
 require_once('fpdm/fpdm.php');
+
 
 DEFINE('RECEIPT_MAX_FILE_SIZE', 6);
 DEFINE('ATTENDANCE_MAX_FILE_SIZE', 6);
@@ -20,7 +22,6 @@ $name  = '';
 $position  = '';
 $email = '';
 $m_id  = '';
-$uniqueID = uniqid(); 
 
 // Initialize expenditure variables
 $date = '';
@@ -116,7 +117,7 @@ if(!preg_match('/^(19|20)\d\d([-])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])$/', 
 }
 
 // Check vendor
-if (!preg_match("/^[\w\ \'\.]{1,128}$/", $vendor)) {
+if (!preg_match("/^[\w\ \'\.]{1,128}$/", $vendor)) { 
     $result_data->message = 'Your vendor name is invalid. Please only use latin characters a-z with an optional '
         . 'apostrophe or period. Your vendor is also limited to 128 characters.';
     echo json_encode($result_data);
@@ -186,10 +187,10 @@ $admin_email = '';
 $super_email = '';
 
 // Get file names
-$receiptText = $uniqueID . "-receipt-" . $receipt['name'];
+$receiptText = "reciept-" . $receipt['name'];
 $docsText = '';
 if ($docs) {
-    $docsText = $uniqueID . "-supporting-docs-" . $docs['name'];
+    $docsText = "supporting-docs-" . $docs['name'];
 }
 
 $sql = 'SELECT `admin_name`, `admin_email`, `super_email` FROM `reimbursement_admin`';
@@ -226,7 +227,7 @@ if (!$result) {
 }
 
 // Fill PDF
-$output_pdf_path = '../documents/reimbursement-' . $uniqueID . '.pdf';
+$output_pdf_path = '../documents/reimbursement-' . uniqid() . '.pdf';
 
 try {
     $fields = array(
@@ -270,18 +271,17 @@ try {
 $mail = new PHPMailer(true);
 
 try {
-    $mail->Subject = "Reimbursement Request Recieved";
 
     $email_msg = "Hello " . $name . ", \n \n";
-    $email_msg .= "This email is to confirm that we have recieved your reimbursement request. ";
-    $email_msg .= "Please verify the transaction information below:\n";
+    $email_msg .= "This email is to confirm that we have recieved your reimbursement request. Please verify the information below";
     $email_msg .= "Date: " . date("m/d/Y", strtotime($date)) . " \n";
     $email_msg .= "Vendor: " . $vendor . " \n";
     $email_msg .= "Amount: " . $amount . " \n";
+    $email_msg .= "Amount: \$" . $amount . " \n";
     $email_msg .= "Description: " . $description . " \n \n";
     $email_msg .= "Your transaction will be evaluated and if we require any further information, we will contact you. \n \n";
     $email_msg .= "If you have any questions, feel free to reply back to this email. \n \n";
-    $email_msg .= "Best regards, \n";
+    $email_msg .= "Thanks, \n";
     $email_msg .= $admin_name;
 
     $mail->Body = $email_msg;
@@ -292,17 +292,17 @@ try {
     $result_data->message = 'Error occurred while sending your confirmation email. Please email the admin in the description notifying of this error.';
     echo json_encode($result_data);
     die();
-}
+} 
 
 // Email admin
 $mail_admin = new PHPMailer(true);
 
 try {
+          
     $mail_admin->Subject = "Reimbursement Request Recieved";
 
     $email_msg  = "Hello " . $admin_name . ", \n \n";
     $email_msg .= "A reimbursement request has been created with the following information: \n \n";
-    $email_msg .= "Request ID: " . $uniqueID ."\n";
     $email_msg .= "Name: " . $name . " \n";
     $email_msg .= "Position: " . $position . " \n";
     $email_msg .= "Email: " . $email . " \n";
@@ -338,7 +338,7 @@ try {
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $output_pdf_path);
-    $mail_admin->AddAttachment($output_pdf_path, $uniqueID . '-reimbursement.pdf', 'base64', $mime);
+    $mail_admin->AddAttachment($output_pdf_path, 'reimbursement.pdf', 'base64', $mime);
 
     $mail_admin->send();
 } catch (Exception $e) {

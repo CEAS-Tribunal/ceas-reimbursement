@@ -117,9 +117,9 @@ if(!preg_match('/^(19|20)\d\d([-])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])$/', 
 }
 
 // Check vendor
-if (!preg_match("/^[\w\ \'\.]{1,128}$/", $vendor)) { 
+if (!preg_match("/^[A-Za-z0-9\.\!\@\#\$\%\^\&\*\(\)\-\_\+\=\`\~\,\.\?\/\<\>\;\:\.]{1,128}$/", $vendor)) {
     $result_data->message = 'Your vendor name is invalid. Please only use latin characters a-z with an optional '
-        . 'apostrophe or period. Your vendor is also limited to 128 characters.';
+        . '!@#$%^&*()_-+=:;?.`~<>, and \'. Your vendor is also limited to 128 characters.';
     echo json_encode($result_data);
     die();
 }
@@ -132,9 +132,9 @@ if (!preg_match("/^[0-9]{0,10}.[0-9]{0,10}$/", $amount)) {
 }
 
 // Check description
-if (!preg_match("/^[\w\ \'\.\-\_\@\+]{1,500}$/", $description)) {
+if (!preg_match("/^[A-Za-z0-9\.\!\@\#\$\%\^\&\*\(\)\-\_\+\=\`\~\,\.\?\/\<\>\;\:\.]{1,500}$/", $description)) {
     $result_data->message = 'Your description is invalid. Please only use latin characters a-z with an optional '
-        . 'apostrophe or period. Your description is also limited to 500 characters.';
+        . '!@#$%^&*()_-+=:;?.`~<>, and \'. Your description is also limited to 500 characters.';
     echo json_encode($result_data);
     die();
 }

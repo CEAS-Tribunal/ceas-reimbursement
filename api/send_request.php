@@ -4,6 +4,7 @@ ini_set('display_errors', '1');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
 
 set_include_path('./includes/');
 require_once('mysqli.php');
@@ -11,7 +12,7 @@ require_once('check_file.php');
 require_once('PHPMailer/Exception.php');
 require_once('PHPMailer/PHPMailer.php');
 require_once('fpdm/fpdm.php');
-
+require_once('PHPMailer/SMTP.php');
 DEFINE('RECEIPT_MAX_FILE_SIZE', 6);
 DEFINE('ATTENDANCE_MAX_FILE_SIZE', 6);
 
@@ -115,7 +116,7 @@ if(!preg_match('/^(19|20)\d\d([-])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])$/', 
 }
 
 // Check vendor
-if (!preg_match("/^[\w\ \'\.]{1,128}$/", $vendor)) {
+if (!preg_match("/^[A-Za-z0-9\.\!\@\#\$\%\^\&\*\(\)\-\_\+\=\`\~\,\.\?\/\<\>\;\:\.]{1,128}$/", $vendor)) {
     $result_data->message = 'Your vendor name is invalid. Please only use latin characters a-z with an optional '
         . 'apostrophe or period. Your vendor is also limited to 128 characters.';
     echo json_encode($result_data);
@@ -130,7 +131,7 @@ if (!preg_match("/^[0-9]{0,10}.[0-9]{0,10}$/", $amount)) {
 }
 
 // Check description
-if (!preg_match("/^[\w\ \'\.]{1,500}$/", $description)) {
+if (!preg_match("/^[A-Za-z0-9\.\!\@\#\$\%\^\&\*\(\)\-\_\+\=\`\~\,\.\?\/\<\>\;\:\']{1,500}$/", $description)) {
     $result_data->message = 'Your description is invalid. Please only use latin characters a-z with an optional '
         . 'apostrophe or period. Your description is also limited to 500 characters.';
     echo json_encode($result_data);
@@ -269,6 +270,14 @@ try {
 $mail = new PHPMailer(true);
 
 try {
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+    $mail->isSMTP();                                            //Send using SMTP
+    $mail->Host       = 'smtp.sendgrid.net';                     //Set the SMTP server to send through
+    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+    $mail->Username   = 'apikey';                     //SMTP username
+    $mail->Password   = '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';                               //SMTP password
+    $mail->Port       = 25;   
+        
     $mail->Subject = "Reimbursement Request Recieved";
 
     $email_msg = "Hello " . $name . ", \n \n";
@@ -289,10 +298,18 @@ try {
 }
 
 // Email admin
-$mail_admin = new PHPMailer(true);
+$mail_admin = new PHPMailer(true);//changed for testing should be $mail_admin not $mail
 
 try {
-    $mail_admin->Subject = "Reimbursement Request Recieved";
+    $mail_admin ->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+    $mail_admin ->isSMTP();                                            //Send using SMTP
+    $mail_admin ->Host       = 'smtp.sendgrid.net';                     //Set the SMTP server to send through
+    $mail_admin ->SMTPAuth   = true;                                   //Enable SMTP authentication
+    $mail_admin ->Username   = 'apikey';                     //SMTP username
+    $mail_admin ->Password   = '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';                               //SMTP password
+    $mail_admin ->Port       = 25;   
+    $mail_admin ->Subject = "Reimbursement Request Recieved";//changed for testing should be $mail_admin not $mail
+
 
     $email_msg  = "Hello " . $admin_name . ", \n \n";
     $email_msg .= "A reimbursement request has been created with the following information: \n \n";
@@ -314,26 +331,36 @@ try {
     $email_msg .= "Best regards, \n";
     $email_msg .= $super_email;
 
-    $mail_admin->Body = $email_msg;
-    $mail_admin->setFrom($super_email);
-    $mail_admin->addAddress($admin_email, $admin_name);
+    
+
+    $mail_admin ->Body = $email_msg; //changed for testing should be $mail_admin not $mail
+
+    //$mail->setFrom($super_email); //changed for testing should be $mail_admin not $mail
+
+    //$mail->addAddress($admin_email, $admin_name); //changed for testing should be $mail_admin not $mail
+    $mail_admin ->setFrom($admin_email, $admin_name);
+    $mail_admin ->addAddress($email, $name);
 
     // Attach files
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $receipt['tmp_name']);
-    $mail_admin->AddAttachment($receipt['tmp_name'], $receiptText, 'base64', $mime);
+    $mail_admin ->AddAttachment($receipt['tmp_name'], $receiptText, 'base64', $mime);//changed for testing should be $mail_admin not $mail
+
 
     if ($docs) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_file($finfo, $docs['tmp_name']);
-        $mail_admin->AddAttachment($docs['tmp_name'], $docsText, 'base64', $mime);
+        $mail_admin ->AddAttachment($docs['tmp_name'], $docsText, 'base64', $mime);//changed for testing should be $mail_admin not $mail
+
     }
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $output_pdf_path);
-    $mail_admin->AddAttachment($output_pdf_path, 'reimbursement.pdf', 'base64', $mime);
+    $mail_admin ->AddAttachment($output_pdf_path, 'reimbursement.pdf', 'base64', $mime);//changed for testing should be $mail_admin not $mail
 
-    $mail_admin->send();
+
+    $mail_admin ->send();//changed for testing should be $mail_admin not $mail
+
 } catch (Exception $e) {
     $result_data->message = 'Error occurred while sending the admin the confirmation email. Please email the admin in the description notifying of this error.';
     echo json_encode($result_data);

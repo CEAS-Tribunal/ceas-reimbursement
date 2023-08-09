@@ -14,7 +14,7 @@ Prerequisites:
 
 1. `cd` into the MAMP folder.
 2. `git clone https://github.com/omaralsayed/ceas-reimbursement.git` and click enter to clone repo (alternatively, you can use the SSH clone if you have that set up).
-3. `cd` into htdocs.
+3. Change the name of the repo folder to htdocs and then `cd` into htdocs.
 4. Run `npm install` to install all of the needed modules for the project.
 5. Run `npm install gulp-cli -g` to install Gulp globally.
 6. Next, run either `gulp dev` or `gulp watch`. Gulp watch will compile the javascript file and CSS into a minified cross-browser compatible code while gulp dev will not. It is recommended to use gulp dev for development to make debugging easier and reserve gulp watch for the final production code.
